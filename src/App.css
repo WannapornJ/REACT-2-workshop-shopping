@@ -1,0 +1,20 @@
+button {
+	@apply rounded-2xl size-8 text-center flex items-center justify-center;
+}
+
+.header {
+	@apply font-bold text-2xl text-sky-950;
+}
+
+h3.sub-header {
+	@apply font-bold text-lg text-sky-950;
+}
+
+.row {
+	@apply flex justify-between p-2;
+}
+
+
+.counter {
+	@apply flex items-center gap-3;
+}
