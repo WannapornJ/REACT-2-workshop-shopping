@@ -7,6 +7,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 function App() {
   const [products, setProducts] = useState([]);
   const [checkoutPorducts, setCheckoutPorducts] = useState([]);
+  const [deleteProducts, setDeleteProducts] = useState([]);
 
   const getData = async () => {
     try {
@@ -16,6 +17,18 @@ function App() {
       setProducts([]);
       console.error("error", error);
     }
+  };
+
+  const handleDeleteProduct = (p) => {
+    setCheckoutPorducts((prev) => prev.filter((prod) => prod.id !== p.id));
+    setDeleteProducts((prev) => [...prev, p.id]);
+    setProducts((prev) =>
+      prev.map((prod) =>
+        prod.product_id === p.id
+          ? { ...prod, quantity: prod.quantity + p.qty }
+          : prod
+      )
+    );
   };
 
   useEffect(() => {
@@ -33,6 +46,7 @@ function App() {
               product={product}
               setProducts={setProducts}
               setCheckoutPorducts={setCheckoutPorducts}
+              deleteProducts={deleteProducts}
             />
           ))}
         </div>
@@ -40,33 +54,41 @@ function App() {
           <div className="group">
             <h2 className="header">Checkout</h2>
             <div className="h-[calc(100vh-108px)] overflow-y-auto scrollbar">
-              {checkoutPorducts.sort((a, b) => a.id - b.id).map((product) => (
-                <div className="list bg-white shadow-lg p-4 flex justify-between items-center">
-                  <div className="left ">
-                    <p>
-                      <span>({product.qty}) </span>
-                      <span>{product.name}</span>
-                    </p>
-                    <p>{product.price}</p>
-                  </div>
-                  <div className="right flex items-center">
-                    <p>{(product.qty * product.price).toFixed(2)}</p>
-                    <button>
-                      <FaRegTrashCan />
-                    </button>
-                  </div>
-                </div>
-              ))}
+              <ul className="flex flex-col bg-white shadow-lg rounded-lg">
+                {checkoutPorducts
+                  .sort((a, b) => a.id - b.id)
+                  .map((product) => (
+                    <li
+                      key={product.id}
+                      className="list p-4 flex justify-between items-center"
+                    >
+                      <div className="left ">
+                        <p>
+                          <span>({product.qty}) </span>
+                          <span>{product.name}</span>
+                        </p>
+                        <p>{product.price}</p>
+                      </div>
+                      <div className="right flex items-center">
+                        <p>{(product.qty * product.price).toFixed(2)}</p>
+                        <button onClick={() => handleDeleteProduct(product)}>
+                          <FaRegTrashCan />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
             </div>
           </div>
           <h3 className="sub-header py-4">
             <span className="underline underline-offset-4">Grand Total:</span>
             <span className="ml-4">
               {checkoutPorducts
-                .map((product) =>
-                  Number((product.price * product.qty).toFixed(2))
-                )
-                .reduce((acc, cur) => Number((acc + cur).toFixed(2)), 0)}
+                .reduce(
+                  (acc, cur) =>
+                    Number((acc + (cur.price * cur.qty)).toFixed(2)),
+                  0
+                )}
               &nbsp; Baht
             </span>
           </h3>

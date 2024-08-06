@@ -1,9 +1,21 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TbCurrencyBaht } from "react-icons/tb";
 
-export default function Card({ product, setProducts, setCheckoutPorducts }) {
+export default function Card({
+  product,
+  setProducts,
+  setCheckoutPorducts,
+  deleteProducts,
+}) {
   const [count, setCount] = useState(0);
   const orignalExstQty = useMemo(() => product.quantity, []);
+
+  useEffect(() => {
+	if (!deleteProducts.length) return
+	if (deleteProducts.includes(product.product_id)){
+		setCount(0)
+	} 
+  }, [deleteProducts]);
 
   const add = () => {
     if (count >= orignalExstQty || count + product.quantity !== orignalExstQty)
@@ -47,23 +59,24 @@ export default function Card({ product, setProducts, setCheckoutPorducts }) {
           : prod
       )
     );
-	setCheckoutPorducts((prev) => {
-    const target = prev.find((prod) => prod.id === product.product_id);
-    if (!target) return prev;
-    if (target.qty > 1) {
-      return prev.map((prod) =>
-        prod.id === product.product_id
-          ? {
-              ...prod,
-              qty: prod.qty - 1,
-            }
-          : prod
-      );
-    } else {
-      return prev.filter((prod) => prod.id !== product.product_id);
-    }
-  })};
-  
+    setCheckoutPorducts((prev) => {
+      const target = prev.find((prod) => prod.id === product.product_id);
+      if (!target) return prev;
+      if (target.qty > 1) {
+        return prev.map((prod) =>
+          prod.id === product.product_id
+            ? {
+                ...prod,
+                qty: prod.qty - 1,
+              }
+            : prod
+        );
+      } else {
+        return prev.filter((prod) => prod.id !== product.product_id);
+      }
+    });
+  };
+
   return (
     <div className="card shadow-lg p-4 rounded-lg">
       <div className="row">
